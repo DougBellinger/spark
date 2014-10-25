@@ -1,10 +1,11 @@
 var spark = {
 	baseUrl : "https://api.spark.io/",
-	access_token : null, 
-	test : function (data) {
-		alert(data);
-	},
-	login : function(user, pass) {
+	access_token : localStorage.sparkAccessToken,
+	devices : localStorage.devices,
+	username : "none",
+	login : function(user, pass, callback) {
+			$("#results").html("Logging in...");
+			spark.username = user;
 			$.post(this.baseUrl+"oauth/token", {
 	            username: user,
 	            password: pass,
@@ -14,18 +15,32 @@ var spark = {
 	            client_secret: "client_secret_here"
 	        })
 	        .done(function(data) {
-	        	console.log("Loaded "+data);
-	        	access_token = data.access_token;
+	        	console.log("Loaded "+data.responseText);
+	        	spark.access_token = data.access_token;
+	        	localStorage.sparkAccessToken = data.access_token;
+	        	$("#results").html("User: "+ spark.username + " logged in.<br>"+spark.access_token);
+	        	callback();
 	        })
-	        .error(function(e) {
-	        	alert("Error"+e);
+	        .fail(function(e) {
+	        	$("#results").html(e.responseText);
 	        });
 	},
-	getDevices : function(token) {
-		$.get(this.baseUrl + "v1/devices", {
-			access_token : token
+	getDevices : function( callback) {
+		$.get(spark.baseUrl + "v1/devices", {
+			access_token : spark.access_token
 		}, function(data, textStatus) {
-			alert("Response from server: " + data);
+			$("#results").html("Response from server: " + textStatus);
+			spark.devices = data;
+			localStorage.devices = spark.devices;
+			callback();
 		});
 	}
 };
+
+
+
+
+
+
+
+

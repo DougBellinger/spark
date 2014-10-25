@@ -1,0 +1,88 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript"
+	src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<link rel="stylesheet"
+	href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/jquery-1.10.2.js"></script>
+<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<link rel="stylesheet" type="text/css" href="spark.css">
+<script type="text/javascript" src="./spark_jquery.js"></script>
+<script type="text/javascript">
+	function addDeviceTab(name) {
+		$("div#tabs ul")
+				.append("<li><a href='#tab_device_" + name + "'>" + name
+								+ "</a></li>");
+		$("div#tabs").append(
+				"<div id='tab_device_" + name + "'>" + name + "</div>");
+		$("div#tabs").tabs("refresh");
+	}
+
+	function addDeviceToList(index, device) {
+		var record = "<div class='row'><div class='cell'>" + device.name
+				+ "</div>";
+		if (device.connected == true) {
+			record = record + "<div class='core_enabled cell'></div>";
+			addDeviceTab(device.name);
+		} else {
+			record = record + "<div class='core_disabled cell'></div>";
+		}
+		record += "</div>";
+		$("#device_list").append(record);
+	}
+
+	function loggedIn() {
+		spark.getDevices(function() {
+			$("#tabs").tabs("enable", 1);
+			$.each(spark.devices, addDeviceToList)
+		});
+	}
+
+	$(document).ready(function() {
+		$("#results").html(spark.access_token);
+		$("#tabs").tabs({
+			disabled : [ 1, 2 ]
+		});
+		$("#loginButton").click(function() {
+			var u = $("#user").val();
+			var p = $("#password").val();
+			console.log("Logging in to Spark.io:" + u);
+			spark.login(u, p, loggedIn);
+		});
+		loggedIn();
+	});
+</script>
+</head>
+<body>
+	<div id="tabs">
+		<ul id="tablist">
+			<li><a href="#tabs-login">Login</a></li>
+			<li><a href="#tabs-devices">Devices</a></li>
+			<li><a href="#tabs-application">Application</a></li>
+		</ul>
+		<div id="tabs-login">
+			<form id="login">
+				<div>
+					<label>User Name <input id="user" name="user" type="text"
+						placeholder="Spark.io user name." required autofocus>
+					</label>
+				</div>
+				<div>
+					<label>Password <input id="password" name="password"
+						type="password" placeholder="Spark.io password" required autofocus>
+					</label>
+				</div>
+				<input type="button" id="loginButton" value="Login">
+			</form>
+		</div>
+		<div id="tabs-devices">
+			<div id="device_list" class="table"></div>
+		</div>
+		<div id="tabs-application" class="disabled">application</div>
+	</div>
+	<div id="results">results</div>
+</body>
+</html>

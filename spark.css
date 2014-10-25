@@ -1,0 +1,31 @@
+@CHARSET "US-ASCII";
+.core_enabled {
+	color : blue;
+    background-image: url('images/greencheck.png');
+    height:20px;
+    width:20px;
+}
+
+.core_disabled {
+	color : grey;
+    background-image: url('images/redx.png');
+    height:20px;
+    width:20px;
+}
+
+.table {
+    display:table;
+}
+.header {
+    display:table-header-group;
+    font-weight:bold;
+}
+.rowGroup {
+    display:table-row-group;
+}
+.row {
+    display:table-row;
+}
+.cell {
+    display:table-cell;
+}

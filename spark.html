@@ -5,15 +5,70 @@
 <title>Insert title here</title>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-<link rel="stylesheet"
-	href="//code.jquery.com/ui/1.11.2/themes/smoothness/jquery-ui.css">
-<script src="//code.jquery.com/jquery-1.10.2.js"></script>
-<script src="//code.jquery.com/ui/1.11.2/jquery-ui.js"></script>
+<link rel="stylesheet" href="js/jquery-ui.css">
+<script src="js/jquery-1.10.2.js"></script>
+<script src="js/jquery-ui.js"></script>
 <link rel="stylesheet" type="text/css" href="spark.css">
 <script type="text/javascript" src="./spark_jquery.js"></script>
 <script type="text/javascript">
+
+	function setFnReturn(dname, vname, status) {
+		console.log("Received function:"+dname+", " +vname+", - "+status);
+		$("#functions_"+dname+" #"+vname).html(status);
+	}
+
+	function functionButton(e) {
+		console.log("Calling Function:"+e.target.id);
+		var dname = $(e.target).closest(".devTable")[0].id;
+		var args = $(e.target).closest(".row").find(".args").val();
+		spark.callFunction(dname, e.target.id, args, setFnReturn);
+	}
+	
+	function setValue(dname, data) {
+		console.log("Received variable:"+dname+" - "+data.result);
+		$("#variables_"+dname+" #"+data.name).html(data.result);
+	}
+	
+	function variableButton(e) {
+		console.log("Getting Variable:"+e.target.id);
+		var dname = $(e.target).closest(".devTable")[0].id;
+		spark.getVariable(dname, e.target.id, setValue);
+	}
+
 	function fillInDeviceTab(details) {
-		alert("Got Details");
+		var t = "<div class='table devTable' id='"+details.name+"'>" +
+					"<div class='table varTable' id='variables_"+details.name+"'/>"+
+					"<div class='table fnTable' id='functions_"+details.name+"'/>" +
+				"</div>";
+		$('#tab_device_'+details.name).append(t);
+		$.each(details.variables, function (vname, vtype) {
+			var f = "<div class='row'>"+
+			"<div class='cell'>"+vname+"</div>" + // variable name
+			"<div class='cell'>"+vtype+"</div>"+
+			"<div class='cell' id='"+vname+"'>value...</div>"+
+			"<div class='cell'><input type='button' class='varButton' id='"+vname+"'></div>" +
+			"</div>";
+				$("#variables_"+details.name).append(f);
+				spark.getVariable(details.name, vname, setValue);
+		});
+
+		$.each(details.functions, function (index, fn) {
+			var f = "<div class='row'>"+
+			"<div class='cell'>"+fn+"</div>" +
+			"<div class='cell'><input type='text' class='args' placeholder='arguments' id='args'></div>"+
+			"<div class='cell' id='"+fn+"'>...</div>"+
+			"<div class='cell'><input type='button' class='fnButton' id='"+fn+"'></div>" +
+			"</div>";
+				$("#functions_"+details.name).append(f);	
+		});
+		$(".fnButton").click(functionButton);
+		$(".varButton").click(variableButton);
+	}
+	
+	function clearDeviceTabs(device) {
+		$('div#tabs li:contains("Core:")').remove();	
+		$('div[id^=tab_device]').remove();
+		$("div#tabs").tabs("refresh");
 	}
 	
 	function addDeviceTab(device) {
@@ -40,7 +95,9 @@
 		$("#device_list").append(record);
 	}
 
-	function loggedIn() {
+	function updateDevicesTab() {
+		clearDeviceTabs();
+		$("#device_list").html("");
 		spark.getDevices(function() {
 			$("#tabs").tabs("enable", 1);
 			$.each(spark.devices, addDeviceToList)
@@ -48,7 +105,9 @@
 	}
 
 	$(document).ready(function() {
-		$("#results").html(spark.access_token);
+		if (spark.access_token != null) {
+			$("#results").html("Using existing token:"+spark.access_token);
+		}
 		$("#tabs").tabs({
 			disabled : [ 1, 2 ]
 		});
@@ -56,9 +115,16 @@
 			var u = $("#user").val();
 			var p = $("#password").val();
 			console.log("Logging in to Spark.io:" + u);
-			spark.login(u, p, loggedIn);
+			spark.login(u, p, updateDevicesTab);
 		});
-		loggedIn();
+		$("#devicesButton").click(function() {
+			updateDevicesTab();
+		});
+		if(typeof(Storage) !== "undefined") {
+		    updateDevicesTab();
+		} else {
+		    $("#results").html("Please use a browser with HTML5 local storage.")
+		}
 	});
 </script>
 </head>
@@ -86,6 +152,7 @@
 		</div>
 		<div id="tabs-devices">
 			<div id="device_list" class="table"></div>
+			<input type="button" id="devicesButton" value="Reload">
 		</div>
 		<div id="tabs-application" class="disabled">application</div>
 	</div>

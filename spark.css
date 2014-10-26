@@ -32,4 +32,5 @@
 }
 .cell {
     display:table-cell;
+    padding: 5px;
 }

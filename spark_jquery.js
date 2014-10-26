@@ -39,14 +39,35 @@ var spark = {
 		$.get(spark.baseUrl+"v1/devices/"+id, { access_token: spark.access_token 
 		})
 		.done(function(data, textStatus) {
-			spark.device[id] = data;
+			spark.device[data.name] = data;
 			callback(data);
 		})
 		.fail(function(e) {
 			$("#results").html(e.responseText);
 		});
+	},
+	getVariable : function(devName, vname, callback) {
+		$.get(spark.baseUrl+"v1/devices/"+spark.device[devName].id+"/"+vname, { access_token: spark.access_token 
+		})
+		.done(function(data, textStatus) {
+			callback(devName, data);
+		})
+		.fail(function(e) {
+			$("#results").html(e.responseText);
+		});		
+	},
+	callFunction : function(devName, vname, argString, callback) {
+		$.post(spark.baseUrl+"v1/devices/"+spark.device[devName].id+"/"+vname, { 
+			access_token: spark.access_token,
+			args : argString
+		})
+		.done(function(data, textStatus) {
+			callback(devName, vname, textStatus);
+		})
+		.fail(function(e) {
+			$("#results").html(e.responseText);
+		});		
 	}
-	
 };
 
 

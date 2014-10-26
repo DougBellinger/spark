@@ -12,13 +12,18 @@
 <link rel="stylesheet" type="text/css" href="spark.css">
 <script type="text/javascript" src="./spark_jquery.js"></script>
 <script type="text/javascript">
-	function addDeviceTab(name) {
+	function fillInDeviceTab(details) {
+		alert("Got Details");
+	}
+	
+	function addDeviceTab(device) {
 		$("div#tabs ul")
-				.append("<li><a href='#tab_device_" + name + "'>" + name
+				.append("<li><a href='#tab_device_" + device.name + "'>Core:" + device.name
 								+ "</a></li>");
 		$("div#tabs").append(
-				"<div id='tab_device_" + name + "'>" + name + "</div>");
+				"<div id='tab_device_" + device.name + "'>" + device.name + "</div>");
 		$("div#tabs").tabs("refresh");
+		spark.getDevice(device.id, fillInDeviceTab);
 	}
 
 	function addDeviceToList(index, device) {
@@ -26,10 +31,11 @@
 				+ "</div>";
 		if (device.connected == true) {
 			record = record + "<div class='core_enabled cell'></div>";
-			addDeviceTab(device.name);
+			addDeviceTab(device);
 		} else {
 			record = record + "<div class='core_disabled cell'></div>";
 		}
+		record += "<div>"+device.id+"</div>";
 		record += "</div>";
 		$("#device_list").append(record);
 	}

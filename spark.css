@@ -2,15 +2,19 @@
 .core_enabled {
 	color : blue;
     background-image: url('images/greencheck.png');
-    height:20px;
-    width:20px;
+    background-repeat: no-repeat;
+    background-position: center; 
+    height:32px;
+    width:32px;
 }
 
 .core_disabled {
 	color : grey;
     background-image: url('images/redx.png');
-    height:20px;
-    width:20px;
+    background-repeat: no-repeat;
+    background-position: center; 
+    height:32px;
+    width:32px;
 }
 
 .table {

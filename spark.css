@@ -19,6 +19,8 @@
 
 .table {
     display:table;
+    border: solid;
+    border-color: grey;
 }
 .header {
     display:table-header-group;
@@ -33,4 +35,8 @@
 .cell {
     display:table-cell;
     padding: 5px;
+}
+
+.pending {
+	font-style: italic;
 }

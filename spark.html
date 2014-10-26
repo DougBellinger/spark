@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>Spark Core Interface</title>
 <script type="text/javascript"
 	src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
 <link rel="stylesheet" href="js/jquery-ui.css">
@@ -12,14 +12,17 @@
 <script type="text/javascript" src="./spark_jquery.js"></script>
 <script type="text/javascript">
 
-	function setFnReturn(dname, vname, status) {
+	function setFnReturn(dname, vname, value, status) {
 		console.log("Received function:"+dname+", " +vname+", - "+status);
-		$("#functions_"+dname+" #"+vname).html(status);
+		$("#functions_"+dname+" #status_"+vname).html(status).removeClass("pending");
+		$("#functions_"+dname+" #value_"+vname).html(value);
+		
 	}
 
 	function functionButton(e) {
 		console.log("Calling Function:"+e.target.id);
 		var dname = $(e.target).closest(".devTable")[0].id;
+		$("#functions_"+dname+" #status_"+e.target.id).html("Calling").addClass("pending");
 		var args = $(e.target).closest(".row").find(".args").val();
 		spark.callFunction(dname, e.target.id, args, setFnReturn);
 	}
@@ -27,17 +30,22 @@
 	function setValue(dname, data) {
 		console.log("Received variable:"+dname+" - "+data.result);
 		$("#variables_"+dname+" #"+data.name).html(data.result);
+		$("#functions_"+dname+" #status_"+data.name).removeClass("pending");
 	}
 	
 	function variableButton(e) {
 		console.log("Getting Variable:"+e.target.id);
 		var dname = $(e.target).closest(".devTable")[0].id;
+		$("#functions_"+dname+" #status_"+e.target.id).html("Reading").addClass("pending");
 		spark.getVariable(dname, e.target.id, setValue);
 	}
 
 	function fillInDeviceTab(details) {
-		var t = "<div class='table devTable' id='"+details.name+"'>" +
+		var t = "<div class='devTable' id='"+details.name+"'>" +
+					"<h3>Variables</h3>"+
 					"<div class='table varTable' id='variables_"+details.name+"'/>"+
+					"<p>"+
+					"<h3>Functions</h3>"+
 					"<div class='table fnTable' id='functions_"+details.name+"'/>" +
 				"</div>";
 		$('#tab_device_'+details.name).append(t);
@@ -45,7 +53,7 @@
 			var f = "<div class='row'>"+
 			"<div class='cell'>"+vname+"</div>" + // variable name
 			"<div class='cell'>"+vtype+"</div>"+
-			"<div class='cell' id='"+vname+"'>value...</div>"+
+			"<div class='cell returnCode' id='"+vname+"'>value...</div>"+
 			"<div class='cell'><input type='button' class='varButton' id='"+vname+"'></div>" +
 			"</div>";
 				$("#variables_"+details.name).append(f);
@@ -55,8 +63,9 @@
 		$.each(details.functions, function (index, fn) {
 			var f = "<div class='row'>"+
 			"<div class='cell'>"+fn+"</div>" +
-			"<div class='cell'><input type='text' class='args' placeholder='arguments' id='args'></div>"+
-			"<div class='cell' id='"+fn+"'>...</div>"+
+			"<div class='cell'><input type='text' class='args' placeholder='arguments'></div>"+
+			"<div class='cell' id='status_"+fn+"'>...</div>"+
+			"<div class='cell' id='value_"+fn+"'>...</div>"+
 			"<div class='cell'><input type='button' class='fnButton' id='"+fn+"'></div>" +
 			"</div>";
 				$("#functions_"+details.name).append(f);	
@@ -76,7 +85,7 @@
 				.append("<li><a href='#tab_device_" + device.name + "'>Core:" + device.name
 								+ "</a></li>");
 		$("div#tabs").append(
-				"<div id='tab_device_" + device.name + "'>" + device.name + "</div>");
+				"<div id='tab_device_" + device.name + "'><H2>Device: " + device.name + "</H2></div>");
 		$("div#tabs").tabs("refresh");
 		spark.getDevice(device.id, fillInDeviceTab);
 	}
@@ -109,7 +118,7 @@
 			$("#results").html("Using existing token:"+spark.access_token);
 		}
 		$("#tabs").tabs({
-			disabled : [ 1, 2 ]
+			disabled : [ 1 ]
 		});
 		$("#loginButton").click(function() {
 			var u = $("#user").val();
@@ -133,7 +142,6 @@
 		<ul id="tablist">
 			<li><a href="#tabs-login">Login</a></li>
 			<li><a href="#tabs-devices">Devices</a></li>
-			<li><a href="#tabs-application">Application</a></li>
 		</ul>
 		<div id="tabs-login">
 			<form id="login">
@@ -154,7 +162,6 @@
 			<div id="device_list" class="table"></div>
 			<input type="button" id="devicesButton" value="Reload">
 		</div>
-		<div id="tabs-application" class="disabled">application</div>
 	</div>
 	<div id="results">results</div>
 </body>

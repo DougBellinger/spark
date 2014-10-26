@@ -23,7 +23,7 @@ var spark = {
 	        	callback();
 	        })
 	        .fail(function(e) {
-	        	$("#results").html(e.responseText);
+	        	$("#results").html("Error:"+e.responseText);
 	        });
 	},
 	getDevices : function( callback) {
@@ -39,21 +39,23 @@ var spark = {
 		$.get(spark.baseUrl+"v1/devices/"+id, { access_token: spark.access_token 
 		})
 		.done(function(data, textStatus) {
+			$("#results").html("Got Device:"+data.name);
 			spark.device[data.name] = data;
 			callback(data);
 		})
 		.fail(function(e) {
-			$("#results").html(e.responseText);
+			$("#results").html("Error: "+e.responseText);
 		});
 	},
 	getVariable : function(devName, vname, callback) {
 		$.get(spark.baseUrl+"v1/devices/"+spark.device[devName].id+"/"+vname, { access_token: spark.access_token 
 		})
 		.done(function(data, textStatus) {
+			$("#results").html("Variable "+vname+" returned "+data.result);
 			callback(devName, data);
 		})
 		.fail(function(e) {
-			$("#results").html(e.responseText);
+			$("#results").html("Error:"+e.responseText);
 		});		
 	},
 	callFunction : function(devName, vname, argString, callback) {
@@ -62,7 +64,8 @@ var spark = {
 			args : argString
 		})
 		.done(function(data, textStatus) {
-			callback(devName, vname, textStatus);
+			$("#results").html("Function "+vname+" returned "+textStatus);
+			callback(devName, vname, data.return_value, textStatus);
 		})
 		.fail(function(e) {
 			$("#results").html(e.responseText);

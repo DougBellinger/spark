@@ -3,89 +3,112 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Spark Core Interface</title>
-<script type="text/javascript"
-	src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
-<link rel="stylesheet" href="js/jquery-ui.css">
-<script src="js/jquery-1.10.2.js"></script>
-<script src="js/jquery-ui.js"></script>
+<link rel="stylesheet" href="js/jquery-ui.min.css">
+<script src="js/jquery-2.1.1.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="spark.css">
 <script type="text/javascript" src="./spark_jquery.js"></script>
 <script type="text/javascript">
-
 	function setFnReturn(dname, vname, value, status) {
-		console.log("Received function:"+dname+", " +vname+", - "+status);
-		$("#functions_"+dname+" #status_"+vname).html(status).removeClass("pending");
-		$("#functions_"+dname+" #value_"+vname).html(value);
-		
+		console.log("Received function:" + dname + ", " + vname + ", - "
+				+ status);
+		$("#functions_" + dname + " #status_" + vname).html(status)
+				.removeClass("pending");
+		$("#functions_" + dname + " #value_" + vname).html(value);
+
 	}
 
 	function functionButton(e) {
-		console.log("Calling Function:"+e.target.id);
+		var fname  = e.target.parentElement.id;
+		if (fname == "") fname = e.target.id;
+		console.log("Calling Function:" + fname);
 		var dname = $(e.target).closest(".devTable")[0].id;
-		$("#functions_"+dname+" #status_"+e.target.id).html("Calling").addClass("pending");
+		$("#functions_" + dname + " #status_" + fname).html("calling").addClass("pending");
 		var args = $(e.target).closest(".row").find(".args").val();
-		spark.callFunction(dname, e.target.id, args, setFnReturn);
+		spark.callFunction(dname, fname, args, setFnReturn);
 	}
-	
+
 	function setValue(dname, data) {
-		console.log("Received variable:"+dname+" - "+data.result);
-		$("#variables_"+dname+" #"+data.name).html(data.result);
-		$("#functions_"+dname+" #status_"+data.name).removeClass("pending");
+		console.log("Received variable:" + dname + " - " + data.result);
+		$("#variables_" + dname + " #value_" + data.name).html(data.result).removeClass("pending");
 	}
-	
+
 	function variableButton(e) {
-		console.log("Getting Variable:"+e.target.id);
+		var vname = e.target.parentElement.id;
+		if (vname == "") vname = e.target.id;
+		console.log("Getting Variable:" + vname);
 		var dname = $(e.target).closest(".devTable")[0].id;
-		$("#functions_"+dname+" #status_"+e.target.id).html("Reading").addClass("pending");
-		spark.getVariable(dname, e.target.id, setValue);
+		$("#variables_" + dname + " #value_" + vname).addClass("pending");
+		spark.getVariable(dname, vname, setValue);
 	}
 
 	function fillInDeviceTab(details) {
-		var t = "<div class='devTable' id='"+details.name+"'>" +
-					"<h3>Variables</h3>"+
-					"<div class='table varTable' id='variables_"+details.name+"'/>"+
-					"<p>"+
-					"<h3>Functions</h3>"+
-					"<div class='table fnTable' id='functions_"+details.name+"'/>" +
-				"</div>";
-		$('#tab_device_'+details.name).append(t);
-		$.each(details.variables, function (vname, vtype) {
-			var f = "<div class='row'>"+
-			"<div class='cell'>"+vname+"</div>" + // variable name
-			"<div class='cell'>"+vtype+"</div>"+
-			"<div class='cell returnCode' id='"+vname+"'>value...</div>"+
-			"<div class='cell'><input type='button' class='varButton' id='"+vname+"'></div>" +
-			"</div>";
-				$("#variables_"+details.name).append(f);
-				spark.getVariable(details.name, vname, setValue);
-		});
+		var t = "<div class='devTable' id='"+details.name+"'>"
+				+ "<div class='table varTable' id='variables_"+details.name+"'>"
+				+ "<div class='header'>Variables</div>"
+				+ "<div class='row'><div class='header'>Name</div><div class='header'>Type</div><div class='header'>Value</div><div class='header'>Read</div></div>"
+				+ "</div><p>"
+				+ "<div class='table fnTable' id='functions_"+details.name+"'>"
+				+ "<div class='header'>Functions</div>"
+				+ "<div class='row'><div class='header'>Name</div><div class='header'>Arguments</div><div class='header'>Status</div><div class='header'>Return</div><div class='header'>Call</div></div>"
+				+ "</div>"
+				+ "</div>";
+		$('#tab_device_' + details.name).append(t);
+		$.each(
+						details.variables,
+						function(vname, vtype) {
+							var f = "<div class='row'>"
+									+ "<div class='cell'>"
+									+ vname
+									+ "</div>"
+									+ // variable name
+									"<div class='cell'>"
+									+ vtype
+									+ "</div>"
+									+ "<div class='cell returnCode' id='value_"+vname+"'>value...</div>"
+									+ "<div class='cell'><button class='varButton' id='"+vname+"'/></div>"
+									+ "</div>";
+							$("#variables_" + details.name).append(f);
+							spark.getVariable(details.name, vname, setValue);
+						});
 
-		$.each(details.functions, function (index, fn) {
-			var f = "<div class='row'>"+
-			"<div class='cell'>"+fn+"</div>" +
-			"<div class='cell'><input type='text' class='args' placeholder='arguments'></div>"+
-			"<div class='cell' id='status_"+fn+"'>...</div>"+
-			"<div class='cell' id='value_"+fn+"'>...</div>"+
-			"<div class='cell'><input type='button' class='fnButton' id='"+fn+"'></div>" +
-			"</div>";
-				$("#functions_"+details.name).append(f);	
-		});
+		$.each(
+						details.functions,
+						function(index, fn) {
+							var f = "<div class='row'>"
+									+ "<div class='cell'>"
+									+ fn
+									+ "</div>"
+									+ "<div class='cell'><input type='text' class='args' placeholder='arguments'></div>"
+									+ "<div class='cell' id='status_"+fn+"'>...</div>"
+									+ "<div class='cell' id='value_"+fn+"'>...</div>"
+									+ "<div class='cell'><button class='fnButton' id='"+fn+"'/></div>"
+									+ "</div>";
+							$("#functions_" + details.name).append(f);
+							$(".fnButton").button({icons: {primary: "ui-icon-circle-triangle-e"}, text: false});
+							$(".varButton").button({icons: {primary: "ui-icon-circle-triangle-w"}, text: false});
+						});
 		$(".fnButton").click(functionButton);
 		$(".varButton").click(variableButton);
+		styleTable();
 	}
 	
+	function eventCallback(e) {
+		console.log(e);
+	}
+
 	function clearDeviceTabs(device) {
-		$('div#tabs li:contains("Core:")').remove();	
+		$('div#tabs li:contains("Core:")').remove();
 		$('div[id^=tab_device]').remove();
 		$("div#tabs").tabs("refresh");
 	}
-	
+
 	function addDeviceTab(device) {
-		$("div#tabs ul")
-				.append("<li><a href='#tab_device_" + device.name + "'>Core:" + device.name
-								+ "</a></li>");
+		$("div#tabs ul").append(
+				"<li><a href='#tab_device_" + device.name + "'>Core:"
+						+ device.name + "</a></li>");
 		$("div#tabs").append(
-				"<div id='tab_device_" + device.name + "'><H2>Device: " + device.name + "</H2></div>");
+				"<div id='tab_device_" + device.name + "'></div>");
 		$("div#tabs").tabs("refresh");
 		spark.getDevice(device.id, fillInDeviceTab);
 	}
@@ -99,42 +122,76 @@
 		} else {
 			record = record + "<div class='core_disabled cell'></div>";
 		}
-		record += "<div>"+device.id+"</div>";
+		record += "<div>" + device.id + "</div>";
 		record += "</div>";
 		$("#device_list").append(record);
 	}
 
 	function updateDevicesTab() {
+		$("#accessToken").html(spark.access_token).removeClass('pending');
+		$("#logoutButton").prop("disabled", false);
 		clearDeviceTabs();
 		$("#device_list").html("");
 		spark.getDevices(function() {
 			$("#tabs").tabs("enable", 1);
+			$("#tabs").tabs("enable", 2);
 			$.each(spark.devices, addDeviceToList)
 		});
 	}
 
-	$(document).ready(function() {
-		if (spark.access_token != null) {
-			$("#results").html("Using existing token:"+spark.access_token);
-		}
-		$("#tabs").tabs({
-			disabled : [ 1 ]
+	function styleTable() {
+		$(".jtable th").each(function() {
+			$(this).addClass("ui-state-default");
 		});
-		$("#loginButton").click(function() {
-			var u = $("#user").val();
-			var p = $("#password").val();
-			console.log("Logging in to Spark.io:" + u);
-			spark.login(u, p, updateDevicesTab);
+		$(".jtable td").each(function() {
+			$(this).addClass("ui-widget-content");
 		});
-		$("#devicesButton").click(function() {
-			updateDevicesTab();
+		$(".header").each(function() {
+			$(this).addClass("ui-state-default");
+		})
+		$(".table").each(function() {
+			$(this).addClass("ui-state-default");
 		});
-		if(typeof(Storage) !== "undefined") {
-		    updateDevicesTab();
-		} else {
-		    $("#results").html("Please use a browser with HTML5 local storage.")
-		}
-	});
+		$(".row").each(function() {
+			$(this).addClass("ui-widget-content");
+		});
+		$(".cell").each(function() {
+			$(this).addClass("ui-widget-content");
+		});
+	}
+	
+	$(document).ready(
+			function() {
+				$("button").button();
+				styleTable();
+
+				if (spark.access_token != null) {
+					$("#results").html(
+							"Using existing token:" + spark.access_token);
+				}
+				$("#tabs").tabs({
+					disabled : [ 1, 2 ]
+				});
+				$("#loginButton").click(function() {
+					var u = $("#user").val();
+					var p = $("#password").val();
+					console.log("Logging in to Spark.io:" + u);
+					spark.login(u, p, updateDevicesTab);
+				});
+				$("#devicesButton").click(function() {
+					updateDevicesTab();
+				});
+				if (typeof (Storage) !== "undefined") {
+					updateDevicesTab();
+				} else {
+					$("#results").html(
+							"Please use a browser with HTML5 local storage.")
+				}
+				spark.subscribeEvents(eventCallback);
+				spark.source.onmessage = function(e) {
+					console.log(e);
+				}
+			});
 </script>
 </head>
 <body>
@@ -142,25 +199,45 @@
 		<ul id="tablist">
 			<li><a href="#tabs-login">Login</a></li>
 			<li><a href="#tabs-devices">Devices</a></li>
+			<li><a href="#tabs-events">Events</a></li>
 		</ul>
 		<div id="tabs-login">
 			<form id="login">
-				<div>
-					<label>User Name <input id="user" name="user" type="text"
-						placeholder="Spark.io user name." required autofocus>
-					</label>
-				</div>
-				<div>
-					<label>Password <input id="password" name="password"
-						type="password" placeholder="Spark.io password" required autofocus>
-					</label>
-				</div>
-				<input type="button" id="loginButton" value="Login">
+				<table class='jtable'>
+					<th colspan=2>Login to spark.io</th>
+					<tr>
+						<td class='cell'>User Name</td>
+						<td><input class='cell' id="user" name="user" type="text"
+							placeholder="Spark.io user name." required autofocus></td>
+					</tr>
+					<tr>
+						<td>Password</td>
+						<td><input class='cell' id="password" name="password"
+							type="password" placeholder="Spark.io password" required
+							autofocus></td>
+					</tr>
+					<tr>
+						<td>Token</td> 
+						<td class='pending' id='accessToken'>login to get access token.</td>
+					</tr>
+				</table>
+				<button id="loginButton">Login</button>
+				<button id="logoutButton" disabled="disabled">Logout</button>
 			</form>
 		</div>
 		<div id="tabs-devices">
 			<div id="device_list" class="table"></div>
 			<input type="button" id="devicesButton" value="Reload">
+		</div>
+		<div id="tabs-events">
+			<table class='jtable'>
+				<select id="event_list" size=10 style="width: 600px">
+					<option value="">Event List</option>
+				</select>
+			</table>
+			<input type="button" id="eventsClear" value="Clear"> <input
+				type="button" id="eventsCancel" value="Cancel"> <input
+				type="button" id="eventsSubscribe" value="Subscribe">
 		</div>
 	</div>
 	<div id="results">results</div>

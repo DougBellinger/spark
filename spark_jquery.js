@@ -4,6 +4,7 @@ var spark = {
 	devices : localStorage.devices,
 	device : [ ], 
 	username : "none",
+	source : null,
 	login : function(user, pass, callback) {
 			$("#results").html("Logging in...");
 			spark.username = user;
@@ -70,6 +71,15 @@ var spark = {
 		.fail(function(e) {
 			$("#results").html(e.responseText);
 		});		
+	},
+	subscribeEvents : function(callback) {
+		if (typeof(EventSource) == "undefined") {
+		    $("#results").html("Events disabled.")
+		    return;
+		}
+		var url = spark.baseUrl+"v1/devices/events/?access_token="+spark.access_token;
+		spark.source = new EventSource(url);
+		spark.source.addEventListener("message", callback);
 	}
 };
 

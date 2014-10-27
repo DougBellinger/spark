@@ -17,15 +17,20 @@
     width:32px;
 }
 
+td{font-weight: bold;}
+
 .table {
     display:table;
     border: solid;
     border-color: grey;
 }
+
 .header {
-    display:table-header-group;
+	display: table-header;
+    column-span: all;
     font-weight:bold;
 }
+
 .rowGroup {
     display:table-row-group;
 }
@@ -37,6 +42,15 @@
     padding: 5px;
 }
 
+.header {
+    display:table-cell;
+    padding: 5px;
+}
+
 .pending {
 	font-style: italic;
+}
+
+option:first {
+    color: #999;
 }

@@ -3,7 +3,7 @@ spark
 
 Using jquery to interact with spark.io cores.
 
-https://github.com/DougBellinger/spark/blob/docs/docs/spark%20ui.png
+![Screen shot](https://github.com/DougBellinger/spark/blob/docs/docs/spark%20ui.png)
 
 The file spark_jquery.js provides a simple java script object interface to the spark api.
 

@@ -95,6 +95,10 @@
 	
 	function eventCallback(e) {
 		console.log(e);
+		m = jQuery.parseJSON(e.data);
+		// d = jQuery.parseJSON(m.data);
+		var message = "<option><div>"+spark.deviceName[m.coreid]+"</div><div> "+m.data+"</div></option>";
+		$("#event_list").append(message);
 	}
 
 	function clearDeviceTabs(device) {
@@ -232,7 +236,6 @@
 		<div id="tabs-events">
 			<table class='jtable'>
 				<select id="event_list" size=10 style="width: 600px">
-					<option value="">Event List</option>
 				</select>
 			</table>
 			<input type="button" id="eventsClear" value="Clear"> <input

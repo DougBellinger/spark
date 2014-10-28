@@ -3,6 +3,7 @@ var spark = {
 	access_token : localStorage.sparkAccessToken,
 	devices : localStorage.devices,
 	device : [ ], 
+	deviceName : [], 
 	username : "none",
 	source : null,
 	login : function(user, pass, callback) {
@@ -42,6 +43,7 @@ var spark = {
 		.done(function(data, textStatus) {
 			$("#results").html("Got Device:"+data.name);
 			spark.device[data.name] = data;
+			spark.deviceName[id] = data.name;
 			callback(data);
 		})
 		.fail(function(e) {

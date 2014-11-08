@@ -1,0 +1,14 @@
+{
+	"cores" : [ 
+		{ 	"name":"Animator", 
+			"options" : {
+				"file":"mods/animator.html"
+			}
+		},
+		{ 	"name":"MIA", 
+			"options" : {
+				"file":"mods/mia.html"
+			}
+		}
+	 ] 
+}

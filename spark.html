@@ -8,19 +8,20 @@
 <script src="js/jquery-ui.min.js"></script>
 <link rel="stylesheet" type="text/css" href="spark.css">
 <script type="text/javascript" src="./spark_jquery.js"></script>
+<script type="text/javascript" src="./spark_jquery_ui.js"></script>
+<script type="text/javascript" src="./spark_fn_tool.js"></script>
 <script type="text/javascript">
 	function setFnReturn(dname, vname, value, status) {
-		console.log("Received function:" + dname + ", " + vname + ", - "
-				+ status);
-		$("#functions_" + dname + " #status_" + vname).html(status)
-				.removeClass("pending");
+		console.log("Received function:" + dname + ", " + vname + ", - " + status);
+		$("#functions_" + dname + " #status_" + vname).html(status).removeClass("pending");
 		$("#functions_" + dname + " #value_" + vname).html(value);
 
 	}
 
 	function functionButton(e) {
-		var fname  = e.target.parentElement.id;
-		if (fname == "") fname = e.target.id;
+		var fname = e.target.parentElement.id;
+		if (fname == "")
+			fname = e.target.id;
 		console.log("Calling Function:" + fname);
 		var dname = $(e.target).closest(".devTable")[0].id;
 		$("#functions_" + dname + " #status_" + fname).html("calling").addClass("pending");
@@ -35,7 +36,8 @@
 
 	function variableButton(e) {
 		var vname = e.target.parentElement.id;
-		if (vname == "") vname = e.target.id;
+		if (vname == "")
+			vname = e.target.id;
 		console.log("Getting Variable:" + vname);
 		var dname = $(e.target).closest(".devTable")[0].id;
 		$("#variables_" + dname + " #value_" + vname).addClass("pending");
@@ -51,53 +53,35 @@
 				+ "<div class='table fnTable' id='functions_"+details.name+"'>"
 				+ "<div class='header'>Functions</div>"
 				+ "<div class='row'><div class='header'>Name</div><div class='header'>Arguments</div><div class='header'>Status</div><div class='header'>Return</div><div class='header'>Call</div></div>"
-				+ "</div>"
-				+ "</div>";
+				+ "</div>" + "</div>";
 		$('#tab_device_' + details.name).append(t);
-		$.each(
-						details.variables,
-						function(vname, vtype) {
-							var f = "<div class='row'>"
-									+ "<div class='cell'>"
-									+ vname
-									+ "</div>"
-									+ // variable name
-									"<div class='cell'>"
-									+ vtype
-									+ "</div>"
-									+ "<div class='cell returnCode' id='value_"+vname+"'>value...</div>"
-									+ "<div class='cell'><button class='varButton' id='"+vname+"'/></div>"
-									+ "</div>";
-							$("#variables_" + details.name).append(f);
-							spark.getVariable(details.name, vname, setValue);
-						});
+		$.each(details.variables, function(vname, vtype) {
+			var f = "<div class='row'>" + "<div class='cell'>" + vname + "</div>" + // variable name
+			"<div class='cell'>" + vtype + "</div>" + "<div class='cell returnCode' id='value_"+vname+"'>value...</div>"
+					+ "<div class='cell'><button class='varButton' id='"+vname+"'/></div>" + "</div>";
+			$("#variables_" + details.name).append(f);
+			spark.getVariable(details.name, vname, setValue);
+		});
 
-		$.each(
-						details.functions,
-						function(index, fn) {
-							var f = "<div class='row'>"
-									+ "<div class='cell'>"
-									+ fn
-									+ "</div>"
-									+ "<div class='cell'><input type='text' class='args' placeholder='arguments'></div>"
-									+ "<div class='cell' id='status_"+fn+"'>...</div>"
-									+ "<div class='cell' id='value_"+fn+"'>...</div>"
-									+ "<div class='cell'><button class='fnButton' id='"+fn+"'/></div>"
-									+ "</div>";
-							$("#functions_" + details.name).append(f);
-							$(".fnButton").button({icons: {primary: "ui-icon-circle-triangle-e"}, text: false});
-							$(".varButton").button({icons: {primary: "ui-icon-circle-triangle-w"}, text: false});
-						});
+		$.each(details.functions, function(index, fn) {
+			var f = "<div class='row'>" + "<div class='cell'>" + fn + "</div>"
+					+ "<div class='cell'><input type='text' class='args' placeholder='arguments'></div>"
+					+ "<div class='cell' id='status_"+fn+"'>...</div>" + "<div class='cell' id='value_"+fn+"'>...</div>"
+					+ "<div class='cell'><button class='fnButton' id='"+fn+"'/></div>" + "</div>";
+			$("#functions_" + details.name).append(f);
+			$(".fnButton").button({ icons : { primary : "ui-icon-circle-triangle-e" }, text : false });
+			$(".varButton").button({ icons : { primary : "ui-icon-circle-triangle-w" }, text : false });
+		});
 		$(".fnButton").click(functionButton);
 		$(".varButton").click(variableButton);
 		styleTable();
 	}
-	
+
 	function eventCallback(e) {
 		console.log(e);
 		m = jQuery.parseJSON(e.data);
 		// d = jQuery.parseJSON(m.data);
-		var message = "<option><div>"+spark.deviceName[m.coreid]+"</div><div> "+m.data+"</div></option>";
+		var message = "<option><div>" + spark.deviceName[m.coreid] + "</div><div> " + m.data + "</div></option>";
 		$("#event_list").append(message);
 	}
 
@@ -108,25 +92,23 @@
 	}
 
 	function addDeviceTab(device) {
-		$("div#tabs ul").append(
-				"<li><a href='#tab_device_" + device.name + "'>Core:"
-						+ device.name + "</a></li>");
-		$("div#tabs").append(
-				"<div id='tab_device_" + device.name + "'></div>");
+		$("div#tabs > ul").append("<li><a href='#tab_device_" + device.name + "'>Core:" + device.name + "</a></li>");
+		$("div#tabs").append("<div id='tab_device_" + device.name + "'></div>");
 		$("div#tabs").tabs("refresh");
 		spark.getDevice(device.id, fillInDeviceTab);
 	}
 
 	function addDeviceToList(index, device) {
-		var record = "<div class='row'><div class='cell'>" + device.name
-				+ "</div>";
+		var record = "<div class='row'><div class='cell'>" + device.name + "</div>";
 		if (device.connected == true) {
-			record = record + "<div class='core_enabled cell'></div>";
+			record = record
+					+ "<div class='cell'><div class='ui-state-default ui-corner-all spark-icon'><div class='ui-icon ui-icon-check' ></div></div></div>";
 			addDeviceTab(device);
 		} else {
-			record = record + "<div class='core_disabled cell'></div>";
+			record = record
+					+ "<div class='cell spark-center'><div class='ui-state-default ui-corner-all spark-icon'><div class='ui-icon ui-icon-close' ></div></div></div>";
 		}
-		record += "<div>" + device.id + "</div>";
+		record += "<div class='cell'>" + device.id + "</div>";
 		record += "</div>";
 		$("#device_list").append(record);
 	}
@@ -135,7 +117,9 @@
 		$("#accessToken").html(spark.access_token).removeClass('pending');
 		$("#logoutButton").prop("disabled", false);
 		clearDeviceTabs();
-		$("#device_list").html("");
+		$("#device_list")
+				.html(
+						"<div class='row'><div class='header'>Core</div><div class='header'>Connected</div><div class='header'>Access Id</div></div>");
 		spark.getDevices(function() {
 			$("#tabs").tabs("enable", 1);
 			$("#tabs").tabs("enable", 2);
@@ -163,39 +147,41 @@
 			$(this).addClass("ui-widget-content");
 		});
 	}
-	
-	$(document).ready(
-			function() {
-				$("button").button();
-				styleTable();
 
-				if (spark.access_token != null) {
-					$("#results").html(
-							"Using existing token:" + spark.access_token);
-				}
-				$("#tabs").tabs({
-					disabled : [ 1, 2 ]
-				});
-				$("#loginButton").click(function() {
-					var u = $("#user").val();
-					var p = $("#password").val();
-					console.log("Logging in to Spark.io:" + u);
-					spark.login(u, p, updateDevicesTab);
-				});
-				$("#devicesButton").click(function() {
-					updateDevicesTab();
-				});
-				if (typeof (Storage) !== "undefined") {
-					updateDevicesTab();
-				} else {
-					$("#results").html(
-							"Please use a browser with HTML5 local storage.")
-				}
-				spark.subscribeEvents(eventCallback);
-				spark.source.onmessage = function(e) {
-					console.log(e);
-				}
-			});
+	$(document).ready(function() {
+		$("button").button();
+		styleTable();
+		if (spark.access_token != null) {
+			$("#results").html("Using existing token:" + spark.access_token);
+		}
+		$("#tabs").tabs({ disabled : [ 1, 2, 3 ] });
+		$("#loginButton").click(function() {
+			var u = $("#user").val();
+			var p = $("#password").val();
+			console.log("Logging in to Spark.io:" + u);
+			spark.login(u, p, updateDevicesTab);
+		});
+		$("#devicesButton").click(function() {
+			updateDevicesTab();
+		});
+		if (typeof (Storage) !== undefined) {
+			if (spark.access_token != undefined) {
+				updateDevicesTab();
+			}
+		} else {
+			$("#results").html("Please use a browser with HTML5 local storage.")
+		}
+		spark.subscribeEvents(eventCallback);
+		spark.source.onmessage = function(e) {
+			console.log(e);
+		}
+		spark_function_tool.initialize("#dialogs", "#spark-toolbar")
+		spark_mods.load(function() {
+			if (spark_mods.loaded > 0) {
+				$("#tabs").tabs("enable", 3);
+			}
+		});
+	});
 </script>
 </head>
 <body>
@@ -204,6 +190,7 @@
 			<li><a href="#tabs-login">Login</a></li>
 			<li><a href="#tabs-devices">Devices</a></li>
 			<li><a href="#tabs-events">Events</a></li>
+			<li><a href="#tabs-mods">Modules</a>
 		</ul>
 		<div id="tabs-login">
 			<form id="login">
@@ -221,8 +208,9 @@
 							autofocus></td>
 					</tr>
 					<tr>
-						<td>Token</td> 
-						<td class='pending' id='accessToken'>login to get access token.</td>
+						<td>Token</td>
+						<td class='pending' id='accessToken'>login to get access
+							token.</td>
 					</tr>
 				</table>
 				<button id="loginButton">Login</button>
@@ -242,7 +230,47 @@
 				type="button" id="eventsCancel" value="Cancel"> <input
 				type="button" id="eventsSubscribe" value="Subscribe">
 		</div>
+		<div id="tabs-mods">
+			<div class='jtable'>
+				<div class='row'>
+					<div id='spark-toolbar' class='cell'>
+						<div class='spark-tool'>
+							<button id='add_varRead'>Variable</button>
+						</div>
+						<div class='spark-tool'>
+							<button id='add_slider'>Slider</button>
+						</div>
+					</div>
+					<div class="cell">
+						<div class='jtable'>
+							<div class='row'>
+								<div class='cell' id="modules">
+									<ul></ul>
+								</div>
+							</div>
+							<div class ='row'> 
+								<div class='cell ui-grid-a'>
+									<div class='ui-block-a'>
+										<div id="mod-mode">
+											<input type="radio" id="mod-mode-test" name="project" value="test" /> 
+											<label for="mod-mode-test">Test</label> 
+											<input type="radio" id="mod-mode-edit" name="project" value="edit" checked="checked" /> 
+											<label for="mod-mode-edit">Edit</label>
+										</div>
+									</div>
+									<div class='ui-block-b'>
+										<button id='mod-save'>Save</button>
+										<button id='mod-load'>Reload</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
-	<div id="results">results</div>
+	<div class="footer" id="results">results</div>
+	<div id="dialogs"></div>
 </body>
 </html>

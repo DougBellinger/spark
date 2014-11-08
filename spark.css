@@ -1,23 +1,14 @@
 @CHARSET "US-ASCII";
-.core_enabled {
-	color : blue;
-    background-image: url('images/greencheck.png');
-    background-repeat: no-repeat;
-    background-position: center; 
-    height:32px;
-    width:32px;
-}
-
-.core_disabled {
-	color : grey;
-    background-image: url('images/redx.png');
-    background-repeat: no-repeat;
-    background-position: center; 
-    height:32px;
-    width:32px;
-}
-
+body{font-size: 14px;}
 td{font-weight: bold;}
+
+.dialog-selectmenu {
+	width:95%
+}
+
+#spark-fn-core-selector.ui-selectmenu-button {
+	width: 80%;
+}
 
 .table {
     display:table;
@@ -53,4 +44,73 @@ td{font-weight: bold;}
 
 option:first {
     color: #999;
+}
+
+.spark-icon {
+    display:table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.spark-mod-edit {
+    display:block;
+    width:500px;
+    height:500px;
+}
+
+.spark-control {
+	position: absolute;
+	top: 240px;
+	left:240px;
+}
+
+.spark-button {
+	position:relative;
+	top: 8px;
+	left:8px;
+}
+
+.spark-move {
+	position:relative;
+	top: 0px;
+	left:0px;
+
+}
+
+.spark-edit {
+	position:relative;
+	top: 0px;
+	left:0px;
+}
+
+.spark-tool {
+    display:table-row;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.spark-center {
+    text-align: center;
+}
+
+.toolbar {
+	float: left;
+	width: 200px;
+}
+
+.workarea {
+	float: left;
+	width: 1000px;
+}
+
+.footer {
+	clear: both;
+	height: 50px;
+}
+
+div.colspan>div>div
+{
+    position:relative;
+    width:99px;
+    background-color:lightblue;
 }

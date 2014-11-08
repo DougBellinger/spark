@@ -1,9 +1,9 @@
 var spark = {
 	baseUrl : "https://api.spark.io/",
 	access_token : localStorage.sparkAccessToken,
-	devices : localStorage.devices,
-	device : [ ], 
-	deviceName : [], 
+	devices : (localStorage.devices == undefined) ? [] : localStorage.devices,
+	device : [], //(localStorage.device == undefined) ? [] : localStorage.device,
+	deviceName : [], // (localStorage.deviceName == undefined) ? [] : localStorage.deviceName,
 	username : "none",
 	source : null,
 	login : function(user, pass, callback) {
@@ -44,6 +44,8 @@ var spark = {
 			$("#results").html("Got Device:"+data.name);
 			spark.device[data.name] = data;
 			spark.deviceName[id] = data.name;
+			localStorage.device = spark.device;
+			localStorage.deviceName = spark.deviceName;
 			callback(data);
 		})
 		.fail(function(e) {

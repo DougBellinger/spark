@@ -7,28 +7,36 @@ var spark_mods = {
 		console.log("Loaded a module");
 	},
 	makeSelector: function(where, name, items, cfunc) {
-		var s = "<select name='"+name+"' id='spark-select-"+name+"'>";
+		var s = "<select name='"+name+"' class='spark-select-"+name+"'>";
 		var l = items.length;
 		if (l==0) {
 			s+= "<option class='pending'>Login to spark.io</option>";
 		}
 		for (var i = 0; i < l; i++) {
-			s += "<option>"+items[i]+"</option>";
+			s += "<option value='"+items[i]+"'>"+items[i]+"</option>";
 		}
 		s += "</select>";
 		$(where).html(s);
-		$("#spark-select-"+name).selectmenu({ change : cfunc });
+		$(where+" select").selectmenu({ change : cfunc });
 		$(where+" .ui-selectmenu-button").width("95%");
 	},
-	getCoreSelector : function(where) {
+	getCoreSelector : function(where, update) {
 		var names = [];
 		for (var key in spark.deviceName) {
 			names.push(spark.deviceName[key]);
 		} 
-		spark_mods.makeSelector(where, "Core", names, function() { console.log("coreSelector"); });
+		spark_mods.makeSelector(where, "Core", names, update);
 	},
 	getFnSelector : function(where, core) {
 		spark_mods.makeSelector(where, "Function", spark.device[core].functions, function() { console.log("fnSelector"); });
+	},
+	getSelectorVal : function (where) {
+		return($(where).find(":selected").text());
+	},
+	setSelectorVal: function(where, name) {
+		$(where + " select").val(name);
+		$(where + " select").selectmenu("refresh");
+		$(where + ' .ui-selectmenu-button').width("95%");
 	},
 	loadCurrent: function() {
 		var content = localStorage.getItem(spark_mods.currentMod);
@@ -65,10 +73,19 @@ var spark_mods = {
 	},
 	refreshControls: function (editMode) {
 		spark_function_tool.refresh();
+		spark_checkbox_tool.refresh();
+		spark_slider_tool.refresh();
 		$(".spark-move").addClass("ui-widget-content ui-corner-all ui-icon ui-icon-arrow-4");
 		$(".spark-edit").addClass("ui-widget-content ui-corner-all ui-icon ui-icon-pencil");
+		$(".spark-resize").addClass("ui-widget-content ui-corner-all ui-icon ui-icon-arrow-4-diag ui-resizable-handle ui-resizable-e");
+		$(".spark-move").each(function(index) {
+			$(this).css({position: "absolute", top: $(this).parent().height()+8+"px", left: "-8px"	});
+		});
 		$(".spark-edit").each(function(index) {
-			$(this).css({position: "relative", top: "-18px", left: $(this).parent().width()-4+"px"	});
+			$(this).css({position: "absolute", top: $(this).parent().height()+8+"px", left: $(this).parent().width()-8+"px"	});
+		});
+		$(".spark-resize").each(function(index) {
+			$(this).css({position: "absolute", top: "-8px", left: $(this).parent().width()-8+"px"	});
 		});
 		$(".spark-control").draggable({
 			handle : ".spark-move",
@@ -76,25 +93,40 @@ var spark_mods = {
 			snap: true,
 			snapMode: "outer",
 			drag : function(event, ui) {
-				$("#results").html("Drag: "+ui.position.top+","+ui.position.left+"("+ui.offset.top+","+ui.offset.left+")");
+				$("#results").html("Move: "+ui.position.top+","+ui.position.left+"("+ui.offset.top+","+ui.offset.left+")");
 			}
+		});
+		$(".spark-control.ui-resizable").resizable({
+			handles:{"e":".spark-resize"}
+		});
+		$(".ui-resizable").on("resize", function(event, ui) {
+				$(".spark-edit").each(function(index) {
+				$(this).css({position: "absolute", top: $(this).parent().height()+8+"px", left: $(this).parent().width()-8+"px"	});
+			});
+			$(".spark-resize").each(function(index) {
+				$(this).css({position: "absolute", top: "-8px", left: $(this).parent().width()-8+"px"	});
+			});			
 		});
 		if (editMode) {
 	    	 $(".spark-move").show();
 	    	 $(".spark-edit").show();
+	    	 $(".spark-resize").show();
 	    	 if ($(".spark-control").draggable("instance")) {
 	    		 $(".spark-control").draggable("enable");
 	    		 $(".spark-button").attr("disabled", true);
-	    	 }
+	    	 } 
+	    	 $("div.spark-slider").slider("disable");
 	     }  
 	     else {
 	    	 $(".spark-move").hide();
 	    	 $(".spark-edit").hide();	
+	    	 $(".spark-resize").hide();
 	    	 if ($(".spark-control").draggable("instance")) {
 	    		 $(".spark-control").draggable("disable");
 	    		 $(".spark-button").attr("disabled", false);
-	    	 }
-	     }		
+	    	 } 
+	    	 $("div.spark-slider").slider("enable");
+	    }
 	},
 	load : function(callback) {
 		spark_mods.loadedCallback = callback;

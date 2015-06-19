@@ -4,18 +4,19 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Spark Core Interface</title>
 <link rel="stylesheet" href="js/jquery-ui.min.css">
+<link rel="stylesheet" type="text/css" href="spark.css">
 <script src="js/jquery-2.1.1.min.js"></script>
 <script src="js/jquery-ui.min.js"></script>
-<link rel="stylesheet" type="text/css" href="spark.css">
 <script type="text/javascript" src="./spark_jquery.js"></script>
 <script type="text/javascript" src="./spark_jquery_ui.js"></script>
 <script type="text/javascript" src="./spark_fn_tool.js"></script>
+<script type="text/javascript" src="./spark_cb_tool.js"></script>
+<script type="text/javascript" src="./spark_slider_tool.js"></script>
 <script type="text/javascript">
 	function setFnReturn(dname, vname, value, status) {
 		console.log("Received function:" + dname + ", " + vname + ", - " + status);
 		$("#functions_" + dname + " #status_" + vname).html(status).removeClass("pending");
 		$("#functions_" + dname + " #value_" + vname).html(value);
-
 	}
 
 	function functionButton(e) {
@@ -149,6 +150,7 @@
 	}
 
 	$(document).ready(function() {
+		$("#loginDialog").dialog("open");
 		$("button").button();
 		styleTable();
 		if (spark.access_token != null) {
@@ -176,6 +178,8 @@
 			console.log(e);
 		}
 		spark_function_tool.initialize("#dialogs", "#spark-toolbar")
+		spark_checkbox_tool.initialize("#dialogs", "#spark-toolbar")
+		spark_slider_tool.initialize("#dialogs", "#spark-toolbar")
 		spark_mods.load(function() {
 			if (spark_mods.loaded > 0) {
 				$("#tabs").tabs("enable", 3);
@@ -192,30 +196,23 @@
 			<li><a href="#tabs-events">Events</a></li>
 			<li><a href="#tabs-mods">Modules</a>
 		</ul>
-		<div id="tabs-login">
-			<form id="login">
-				<table class='jtable'>
-					<th colspan=2>Login to spark.io</th>
-					<tr>
-						<td class='cell'>User Name</td>
-						<td><input class='cell' id="user" name="user" type="text"
-							placeholder="Spark.io user name." required autofocus></td>
-					</tr>
-					<tr>
-						<td>Password</td>
-						<td><input class='cell' id="password" name="password"
-							type="password" placeholder="Spark.io password" required
-							autofocus></td>
-					</tr>
-					<tr>
-						<td>Token</td>
-						<td class='pending' id='accessToken'>login to get access
-							token.</td>
-					</tr>
-				</table>
-				<button id="loginButton">Login</button>
-				<button id="logoutButton" disabled="disabled">Logout</button>
-			</form>
+		<div class="container" id="tabs-login">
+			<div class='main'>
+				<div id="#loginDialog">
+				<form id="login">
+					<h2>Login to spark.io</h2>
+					<label>User Name</label>
+					<input id="user" name="user" type="text" placeholder="Spark.io user name." required autofocus/>
+					<label>Password</label>
+					<input class='cell' id="password" name="password" type="password" placeholder="Spark.io password" required
+							autofocus/>
+					<label>Token</label>
+					<p class='pending' id='accessToken'>login to get access	token.</p>
+					<button id="loginButton">Login</button>
+					<button id="logoutButton" disabled="disabled">Logout</button>
+				</form>
+			</div>
+			</div>
 		</div>
 		<div id="tabs-devices">
 			<div id="device_list" class="table"></div>
@@ -234,12 +231,6 @@
 			<div class='jtable'>
 				<div class='row'>
 					<div id='spark-toolbar' class='cell'>
-						<div class='spark-tool'>
-							<button id='add_varRead'>Variable</button>
-						</div>
-						<div class='spark-tool'>
-							<button id='add_slider'>Slider</button>
-						</div>
 					</div>
 					<div class="cell">
 						<div class='jtable'>

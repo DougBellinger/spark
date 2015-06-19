@@ -1,6 +1,60 @@
 @CHARSET "US-ASCII";
 body{font-size: 14px;}
 td{font-weight: bold;}
+div.container, div.spark-dialog-container {
+position:relative;
+float: left;
+}
+
+#spark-fn-core-selector .ui-selectmenu-button {
+	width: 97%;
+}
+
+#spark-fn-fn-selector .ui-selectmenu-button {
+	width: 97%;
+}
+div.spark-select , select, input[type=text],input[type=password] {
+margin-top:3px;
+margin-bottom:7px;
+width:96%;
+border-radius:5px;
+border:0;
+padding:5px 0
+}
+
+div.spark-dialog {
+	padding: 1px;
+}
+
+#spark-fn-dialog, #spark-cb-dialog {
+	width: 250px;
+}
+
+label {
+float: left;
+padding-left: 5px;
+font-weight: bold;
+}
+
+div.main {
+width:320px;
+float:left;
+padding:10px 55px 25px;
+background-color:rgba(223, 239, 252,0.51);
+border:15px solid #fff;
+box-shadow:0 0 10px;
+border-radius:2px;
+font-size:13px;
+text-align:center
+}
+
+div.spark-dialog-main {
+float:left;
+padding:5px;
+background-color:rgba(223, 239, 252,0.51);
+font-size:13px;
+text-align:center
+}
 
 .dialog-selectmenu {
 	width:95%
@@ -64,27 +118,37 @@ option:first {
 	left:240px;
 }
 
-.spark-button {
-	position:relative;
-	top: 8px;
-	left:8px;
+.spark-button, .spark-checkbox, .spark-slider {
+	position:absolute;
+	top: 0;
+	left:0;
+}
+
+label.spark-slider {
+	text-align: center;
+	top: 20px;
 }
 
 .spark-move {
-	position:relative;
+	position:absolute;
 	top: 0px;
-	left:0px;
+	left:-8px;
+}
 
+.spark-size {
+	position:absolute;
+	top: -8px;
+	left:-8px;
 }
 
 .spark-edit {
-	position:relative;
+	position:absolute;
 	top: 0px;
 	left:0px;
 }
 
 .spark-tool {
-    display:table-row;
+    margin-top: 10px;
     vertical-align: middle;
     text-align: center;
 }
@@ -113,4 +177,10 @@ div.colspan>div>div
     position:relative;
     width:99px;
     background-color:lightblue;
+}
+
+div.ui-block-b
+{
+	float: right;
+}
 }
